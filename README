@@ -1,0 +1,15 @@
+DRUPAL SIEGE
+
+Use this script just like you would siege; all arguments will get passed to siege. You must be using version 2.70b or above: 
+
+ftp://ftp.joedog.org/pub/siege/beta/
+
+Previous versions won't return cookies set by Drupal (See changelog: ftp://ftp.joedog.org/pub/siege/beta/ChangeLog).
+
+KNOWN ISSUES
+
+Currently, you can't specify a siegerc file with the -R flag. However, your regular siegerc will be used (siege -C to see where it is...)
+
+USAGE
+
+./drplsiege.sh -c1 -r10 www.yourdrupalsite.com/admin/build/modules
