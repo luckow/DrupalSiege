@@ -21,27 +21,60 @@ DPASS=$(echo -n "${DPASS}" | perl -pe 's/([^-_.~A-Za-z0-9])/sprintf("%%%02X", or
 ## create a temp file to hold the siegerc
 SIEGERCFILE=$(mktemp /tmp/$(basename $0).XXXXXX) || exit 1
 
-if [[ -n "$URLFILE" ]]
-then
-  RAWSITE="$(head -1 $URLFILE)"
-  SITE="${RAWSITE#}"
-else
-  SITE="${!#}"
-fi
+# I'm working with many source-files from apache-logs, and the urls are not always wellformed - I'll give 5 tries to figure out the correct basesite url
+TRIES=1
 
-## figure out the base site URL to contruct the URL for the login page
-## remove trailing slash
-BASESITE=$(echo ${SITE%/})
 while true
 do
-  SUB=$(echo ${BASESITE##*/})
+
+  #echo " > TRIES is ${TRIES}"
+
+  if [[ -n "$URLFILE" ]]
+  then
+    RAWSITE="http://$(grep -Ei 'http(s)?://' $URLFILE | cut -d "/" -f 3 | head -$TRIES | tail -1)"
+    # for debugging purposes
+    echo " > RAW: ${RAWSITE}"
+    SITE="${RAWSITE#}"
+  else
+    SITE="${!#}"
+  fi
+
+  #echo " > rawsite: ${RAWSITE}"
+  #echo " > site: ${SITE}"
+
+  ## figure out the base site URL to contruct the URL for the login page
+  ## remove trailing slash
+  BASESITE=$(echo ${SITE%/})
+
+  # OK, I give up, let the user enter the correct basesite url
+  if [[ "${TRIES}" == 5 ]] 
+  then
+    echo " >>>>> ERROR! <<<<< 5 tries, failed! Bombing out..."
+    read -p " > Please enter the full baseurl (e.g. http://abc.dk): " BASESITE;
+    stty echo 
+    BASESITE=$(echo -n "${BASESITE}")
+  fi
+
+  SUB=$(echo ${BASESITE##*/})x
   HTTPCODE=$(curl -s --output /dev/null -w "%{http_code}\n" ${BASESITE}/update.php)
+
+  if [[ "${HTTPCODE}" != 302 ]] 
+  then
+    echo " >>>>> WARNING (${TRIES}) <<<<< WRONG BASESITE URL: ${BASESITE}/update.php"
+    echo " >>>>> WARNING (${TRIES}) <<<<< URL has an unexpected HTTP CODE (${HTTPCODE}), trying the next (looking for 302 FOUND)"
+    TRIES=`expr $TRIES + 1`
+  fi
+
   if [[ "${HTTPCODE}" == 302 ]] 
   then
+    echo " > YAY! Update.php found at ${BASESITE}/update.php"
     break
   fi
+
   BASESITE=$(echo ${BASESITE} | sed "s/\/${SUB}//")
 done
+
+echo " > All variables set, preparing to launch Siege..."
 
 LOGINURL="${BASESITE}/user"
 POSTVARS="name=${DUSER}&pass=${DPASS}&form_id=user_login&op=Log+in"
