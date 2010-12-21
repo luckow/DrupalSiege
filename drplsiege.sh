@@ -56,7 +56,7 @@ do
   fi
 
   SUB=$(echo ${BASESITE##*/})x
-  HTTPCODE=$(curl -s --output /dev/null -w "%{http_code}\n" ${BASESITE}/update.php)
+  HTTPCODE=$(curl -s -k --output /dev/null -w "%{http_code}\n" ${BASESITE}/update.php)
 
   if [[ "${HTTPCODE}" != 302 ]] 
   then
