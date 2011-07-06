@@ -35,8 +35,8 @@ BASESITE=$(echo ${SITE%/})
 while true
 do
   SUB=$(echo ${BASESITE##*/})
-  HTTPCODE=$(curl -s --output /dev/null -w "%{http_code}\n" ${BASESITE}/update.php)
-  if [[ "${HTTPCODE}" == 302 ]] 
+  HTTPCODE=$(curl -s --output /dev/null -w "%{http_code}\n" ${BASESITE}/install.php)
+  if [[ "${HTTPCODE}" == 200 ]] 
   then
     break
   fi
