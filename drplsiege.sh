@@ -21,7 +21,7 @@ DPASS=$(echo -n "${DPASS}" | perl -pe 's/([^-_.~A-Za-z0-9])/sprintf("%%%02X", or
 ## create a temp file to hold the siegerc
 SIEGERCFILE=$(mktemp /tmp/$(basename $0).XXXXXX) || exit 1
 
-# I'm working with many source-files from apache-logs, and the urls are not always wellformed - I'll give 5 tries to figure out the correct basesite url
+# If you are working with many source-files from apache-logs, and the urls aren't always wellformed - then give it 5 tries to figure out the correct basesite url
 TRIES=1
 
 while true
@@ -49,8 +49,8 @@ do
   # OK, I give up, let the user enter the correct basesite url
   if [[ "${TRIES}" == 5 ]] 
   then
-    echo " >>>>> ERROR! <<<<< 5 tries, failed! Bombing out..."
-    read -p " > Please enter the full baseurl (e.g. http://abc.dk): " BASESITE;
+    echo " >>>>> ERROR! <<<<< 5 tries, failed! Aborting..."
+    read -p " > Please enter the full baseurl (e.g. http://example.com): " BASESITE;
     stty echo 
     BASESITE=$(echo -n "${BASESITE}")
   fi
@@ -67,7 +67,7 @@ do
 
   if [[ "${HTTPCODE}" == 200 ]] 
   then
-    echo " > YAY! install.php found at ${BASESITE}/install.php"
+    echo " > SUCCESS! install.php found at ${BASESITE}/install.php"
     break
   fi
 
