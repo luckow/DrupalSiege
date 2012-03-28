@@ -56,18 +56,18 @@ do
   fi
 
   SUB=$(echo ${BASESITE##*/})x
-  HTTPCODE=$(curl -s -k --output /dev/null -w "%{http_code}\n" ${BASESITE}/update.php)
+  HTTPCODE=$(curl -s -k --output /dev/null -w "%{http_code}\n" ${BASESITE}/install.php)
 
-  if [[ "${HTTPCODE}" != 302 ]] 
+  if [[ "${HTTPCODE}" != 200 ]] 
   then
-    echo " >>>>> WARNING (${TRIES}) <<<<< WRONG BASESITE URL: ${BASESITE}/update.php"
-    echo " >>>>> WARNING (${TRIES}) <<<<< URL has an unexpected HTTP CODE (${HTTPCODE}), trying the next (looking for 302 FOUND)"
+    echo " >>>>> WARNING (${TRIES}) <<<<< WRONG BASESITE URL: ${BASESITE}/install.php"
+    echo " >>>>> WARNING (${TRIES}) <<<<< URL has an unexpected HTTP CODE (${HTTPCODE}), trying the next (looking for 200 OK)"
     TRIES=`expr $TRIES + 1`
   fi
 
-  if [[ "${HTTPCODE}" == 302 ]] 
+  if [[ "${HTTPCODE}" == 200 ]] 
   then
-    echo " > YAY! Update.php found at ${BASESITE}/update.php"
+    echo " > YAY! install.php found at ${BASESITE}/install.php"
     break
   fi
 

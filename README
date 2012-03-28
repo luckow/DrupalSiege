@@ -12,4 +12,7 @@ Currently, you can't specify a siegerc file with the -R flag. However, your regu
 
 USAGE
 
-./drplsiege.sh -c1 -r10 www.yourdrupalsite.com/admin/build/modules
+./drplsiege.sh -c1 -r10 www.example.com/admin/build/modules
+
+LICENSE
+See LICENSE file which is the Expat license (one of several "MIT" licenses).
